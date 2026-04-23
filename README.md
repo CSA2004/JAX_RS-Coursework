@@ -119,4 +119,52 @@ Optionality: Query parameters are inherently optional. A client can hit /sensors
 By using @QueryParam, the API remains flexible, allowing users to build complex searches without breaking the logical structure of the URL.
 
 
+Q7 answer:
+
+The Sub-Resource Locator pattern offers several key architectural benefits for managing complex, nested APIs:
+
+Modularization & Readability: Delegating nested paths (e.g., /sensors/{id}/readings) to a dedicated SensorReadingResource class prevents the primary SensorResource from becoming a "God Object." This makes the codebase significantly easier to navigate and maintain.
+
+Separation of Concerns: Each class is responsible for a single logical entity. The parent resource handles the primary entity logic, while the sub-resource handles the relationship logic (e.g., historical data logs).
+
+Context Inheritance: Sub-resource classes can naturally "inherit" path parameters (like the sensorId) from the parent resource. This avoids repetitive path declarations and makes the relationship between resources explicit in the code structure.
+
+Scalability: In large APIs, this approach allows different teams to work on different resource branches without causing merge conflicts in a single massive controller file.
+
+
+Q8 answer:
+
+HTTP 422 Unprocessable Entity is more semantically accurate because it specifically indicates that the server understands the content type and the syntax of the request is correct (the JSON is valid), but it cannot process the instructions due to logical errors—such as a missing foreign key or reference.
+
+In contrast, a 404 Not Found is typically used when the URI itself (the endpoint) does not exist. Using a 422 helps the client developer distinguish between a "broken link" (404) and a "valid request with business logic errors" (422), which is essential for accurate debugging and automated error handling.
+
+
+Q9 answer:
+
+Exposing internal stack traces is a significant security risk known as Information Exposure through Error Messages.
+
+An attacker can gather highly sensitive technical details from a trace, including:
+
+System Internals: Exact Java versions, library names, and internal package structures.
+
+Logic Vulnerabilities: The specific line numbers and class names where an error occurred, revealing the application’s business logic flow.
+
+Server Environment: Paths to internal directories or database schema details.
+
+This information acts as a roadmap for an attacker to identify and exploit specific vulnerabilities in the server's infrastructure. To prevent this, I implemented custom ExceptionMappers to return clean, standardized error messages instead of raw traces.
+
+
+Q10 answer:
+
+Using JAX-RS filters is superior to manual logging because it follows the principle of Separation of Concerns. Manually inserting logging statements into every method creates "boilerplate" code that clutters business logic and is prone to human error (e.g., forgetting a method or inconsistent formatting).
+
+Key Advantages:
+
+Centralization: All logging logic is contained in a single class (ContainerRequestFilter or ContainerResponseFilter), making it easier to maintain and update.
+
+Dry Principle (Don't Repeat Yourself): You write the code once, and the JAX-RS runtime automatically applies it to every endpoint, ensuring 100% coverage.
+
+Cleaner Business Logic: Your resource methods stay focused entirely on managing campus data, making the codebase more readable and easier to test.
+
+Consistency: It guarantees a uniform log format for every request and response, which is essential for effective debugging and system auditing.
 
