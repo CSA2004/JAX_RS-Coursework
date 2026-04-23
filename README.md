@@ -71,3 +71,52 @@ Real-time Guidance: Unlike static documentation, which can become outdated, hype
 Easier Versioning: The server can change URL structures behind the scenes without breaking the client, as long as the "relation" names (the keys for the links) remain the same.
 
 
+Q3 answer:
+
+This represents a trade-off between bandwidth efficiency and API chattiness:
+
+Returning only IDs: Minimizes initial payload size (saving bandwidth), which is ideal for mobile users. However, it forces the client to make "N" additional API calls to fetch details for each room. This increases network latency and server overhead due to multiple HTTP handshakes.
+
+Returning full objects: Increases the initial response size but allows the client to render all data in a single round-trip. This simplifies client-side processing as the developer doesn't need to manage complex data aggregation from multiple endpoints.
+
+I chose to return full objects to prioritize a "chunky" design over a "chatty" one, ensuring a faster, more responsive user interface.
+
+
+Q4 answer:
+
+Yes, the DELETE operation is idempotent.
+
+In this implementation, idempotency is achieved because the end state of the server remains the same regardless of how many times the request is sent.
+
+First Request: The server finds the room, removes it, and returns a 204 No Content (or 200 OK) status.
+
+Subsequent Requests: If the client sends the exact same request again, the server looks for the room, finds it no longer exists, and returns a 404 Not Found.
+
+Although the status code changes from 204 to 404, the state of the resource on the server does not change after the first successful deletion; the room remains gone. Since the side effects are the same for one or many requests, the operation is technically idempotent.
+
+
+Q5 answer:
+
+The @Consumes annotation acts as a strict filter for the Content-Type header of incoming requests. If a client sends data in an unsupported format like text/plain or application/xml:
+
+Technical Consequence: The JAX-RS runtime will refuse to process the request because it cannot find a matching resource method that is capable of de-serializing that specific media type into a Java object.
+
+Handling the Mismatch: JAX-RS handles this automatically by halting the request execution before it reaches your method logic. It will return an HTTP 415 Unsupported Media Type error response to the client.
+
+This mechanism ensures that the API only accepts data it is programmed to understand, protecting the application from processing incompatible or malformed data structures.
+
+
+Q6 answer:
+
+Using Query Parameters (?type=CO2) is generally superior to using Path Parameters for filtering collections because it adheres to the core principles of RESTful resource modeling:
+
+Resource vs. Attribute: In REST, the URL path should represent a specific resource (the collection of sensors), while query parameters represent attributes used to sort, filter, or search that collection. Using a path for a filter (e.g., /type/CO2) creates a "false hierarchy" that suggests the filter is a resource itself.
+
+Flexibility and Scalability: Query parameters allow for combining multiple filters easily (e.g., ?type=CO2&status=ACTIVE&min=20). Implementing this with path parameters would result in an explosion of complex, rigid URL combinations that are difficult for the server to route and for the client to construct.
+
+Optionality: Query parameters are inherently optional. A client can hit /sensors to get everything, or add a parameter to narrow the results. Path parameters are typically mandatory, making it harder to provide a clean, single entry point for a collection.
+
+By using @QueryParam, the API remains flexible, allowing users to build complex searches without breaking the logical structure of the URL.
+
+
+
