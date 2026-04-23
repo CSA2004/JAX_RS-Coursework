@@ -1,4 +1,5 @@
-##API Design Overview
+API Design Overview
+
 This RESTful Web API manages a Smart Campus ecosystem. It uses Jakarta EE and Jersey (JAX-RS) to handle resources including campus rooms, environmental sensors, and historical data logs.
 
 Service Discovery: A versioned entry point at /api/v1.
@@ -10,7 +11,8 @@ Deep Nesting: Implementation of the Sub-Resource Locator Pattern to manage histo
 Advanced Error Handling: Custom Exception Mappers to ensure the API is "leak-proof"
 
 
-##Build & Launch Instructions
+Build & Launch Instructions
+
 Follow these steps to build and deploy the project locally:
 
 Clone the Repository:
@@ -30,7 +32,8 @@ Deploy the file to your Apache Tomcat 9.0+ webapps folder.
 Access the API:
 The API will be available at http://localhost:8080/Coursework_w2086242/api/v1
 
-##Sample curl Commands
+Sample curl Commands
+
 These commands demonstrate successful interactions with different parts of the API:
 
 Service Discovery:
@@ -48,7 +51,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"id":"R101","value":22.5}'
 Retrieve Sensor History:
 curl -X GET http://localhost:8080/Coursework_w2086242/api/v1/sensors/T1/read
 
-##Question Answers:
+Question Answers:
 
 
 Q1 answer:
