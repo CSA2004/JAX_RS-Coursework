@@ -55,4 +55,19 @@ curl -X GET http://localhost:8080/Coursework_w2086242/api/v1/sensors/T1/read
 
 
 Q1 answer:
-    By default, JAX-RS resource classes are request-scoped. This means a new instance of the class is created for every incoming HTTP request and destroyed once the response is sent. Because the resource instances are short-lived, we cannot store data within standard instance variables. To prevent data loss, I implemented a centralized DataStore using static members. Furthermore, since multiple requests can occur simultaneously (concurrency), I used thread-safe structures like ConcurrentHashMap to prevent race conditions and ensure data consistency.
+
+By default, JAX-RS resource classes are request-scoped. This means a new instance of the class is created for every incoming HTTP request and destroyed once the response is sent. Because the resource instances are short-lived, we cannot store data within standard instance variables. To prevent data loss, I implemented a centralized DataStore using static members. Furthermore, since multiple requests can occur simultaneously (concurrency), I used thread-safe structures like ConcurrentHashMap to prevent race conditions and ensure data consistency.
+
+Q2 answer:
+
+Hypermedia, or HATEOAS (Hypermedia As The Engine Of Application State), is considered a hallmark of advanced REST design because it makes the API self-discoverable. Instead of a client having to hardcode every possible URL, the server provides "navigational clues" (links) within the JSON response that tell the client what they can do next based on the current state of the resource.
+
+Benefits to Client Developers:
+
+Reduced Coupling: Developers don't need to hardcode complex URL patterns (like /api/v1/sensors/123/readings/456). They can simply follow the link provided in the previous response.
+
+Real-time Guidance: Unlike static documentation, which can become outdated, hypermedia links are dynamic. If a resource's state changes (e.g., a sensor is deleted), the server simply stops providing the "delete" or "update" link, informing the client of available actions in real-time.
+
+Easier Versioning: The server can change URL structures behind the scenes without breaking the client, as long as the "relation" names (the keys for the links) remain the same.
+
+
